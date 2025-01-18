@@ -5,7 +5,6 @@ This project sets up a secure and scalable infrastructure on AWS using Terraform
 - An Internet Gateway and a NAT Gateway for internet access.
 - Security groups to control inbound and outbound traffic.
 - An Application Load Balancer (ALB) to distribute traffic to EC2 instances in private subnets.
-- Auto Scaling groups to manage the EC2 instances based on demand.
 
 ## Usage
 
