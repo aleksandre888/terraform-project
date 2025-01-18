@@ -20,6 +20,12 @@ variable "project_tag" {
 
 ### EC2 VARIABLES ###
 
+variable "linux_distro" {
+  type        = string
+  description = "Linux distribution for the EC2 instance"
+  default     = "ubuntu"
+}
+
 variable "ami_id" {
   type        = string
   description = "AMI ID for the EC2 instance"

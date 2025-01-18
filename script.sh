@@ -25,13 +25,13 @@ retry() {
 }
 
 # Update package list
-log "Updating package list"
-retry apt update -y
+log "Updating package list using ${PACKAGE_MANAGER}"
+retry ${PACKAGE_MANAGER} update -y
 log "Package list updated"
 
 # Install nginx
-log "Installing nginx"
-retry apt install -y nginx
+log "Installing nginx using ${PACKAGE_MANAGER}"
+retry ${PACKAGE_MANAGER} install -y nginx
 log "Nginx installed"
 
 # Create a sample index.html file

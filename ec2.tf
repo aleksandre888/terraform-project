@@ -1,8 +1,8 @@
 resource "aws_instance" "web" {
-for_each = {
+  for_each = {
     "web-instance-1" = aws_subnet.private_subnets["private_subnet_1"].id
     "web-instance-2" = aws_subnet.private_subnets["private_subnet_2"].id
-}
+  }
 
   ami                    = var.ami_id
   instance_type          = var.instance_type
