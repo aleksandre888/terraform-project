@@ -7,46 +7,24 @@ resource "aws_security_group" "ec2-sg" {
   ]
 
   dynamic "ingress" {
-    for_each = [
-      {
-        from_port = 0
-        to_port   = 0
-        protocol  = "-1"
-      },
-      {
-        from_port   = -1
-        to_port     = -1
-        protocol    = "icmp"
-        cidr_blocks = [var.website_access_cidr]
-      },
-      {
-        from_port       = var.website_access_port
-        to_port         = var.website_access_port
-        protocol        = "tcp"
-        security_groups = [aws_security_group.alb-sg.id]
-      },
-      {
-        from_port   = var.instance_access_port
-        to_port     = var.instance_access_port
-        protocol    = "tcp"
-        cidr_blocks = [var.instance_access_cidr]
-      }
-    ]
-
+    for_each = var.ec2_ingress_rules
     content {
       from_port       = ingress.value.from_port
       to_port         = ingress.value.to_port
       protocol        = ingress.value.protocol
-      cidr_blocks     = lookup(ingress.value, "cidr_blocks", null)
-      security_groups = lookup(ingress.value, "security_groups", null)
+      cidr_blocks     = ingress.value.cidr_blocks
+      security_groups = [for sg in ingress.value.security_groups : sg == "alb_sg_placeholder" ? aws_security_group.alb-sg.id : sg]
     }
   }
 
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = -1
-    cidr_blocks = [var.website_access_cidr]
+  dynamic "egress" {
+    for_each = var.ec2_egress_rules
+    content {
+      from_port   = egress.value.from_port
+      to_port     = egress.value.to_port
+      protocol    = egress.value.protocol
+      cidr_blocks = egress.value.cidr_blocks
+    }
   }
 
   tags = {
@@ -63,20 +41,28 @@ resource "aws_security_group" "alb-sg" {
     aws_vpc.private_vpc
   ]
 
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = -1
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = [var.website_access_cidr]
+  dynamic "ingress" {
+    for_each = var.alb_ingress_rules
+    content {
+      from_port       = ingress.value.from_port
+      to_port         = ingress.value.to_port
+      protocol        = ingress.value.protocol
+      cidr_blocks     = ingress.value.cidr_blocks
+      security_groups = ingress.value.security_groups
+    }
   }
 
+  dynamic "egress" {
+    for_each = var.alb_egress_rules
+    content {
+      from_port       = egress.value.from_port
+      to_port         = egress.value.to_port
+      protocol        = egress.value.protocol
+      cidr_blocks     = egress.value.cidr_blocks
+      security_groups = egress.value.security_groups
+    }
+  }
   tags = {
-    Name = var.alb_sg_tag
+    Name = var.alb_target_group_tag
   }
 }
