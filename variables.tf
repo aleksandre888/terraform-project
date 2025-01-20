@@ -182,6 +182,20 @@ variable "alb_listener_protocol" {
   default     = "HTTP"
 }
 
+variable "alb_listeners" {
+  type = map(object({
+    port     = number
+    protocol = string
+  }))
+  description = "Map of ALB listeners"
+  default = {
+    http = {
+      port     = 80
+      protocol = "HTTP"
+    }
+  }
+}
+
 variable "target_group_name" {
   type        = string
   description = "Name of the target group"

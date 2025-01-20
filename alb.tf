@@ -13,11 +13,12 @@ resource "aws_lb" "alb" {
   }
 }
 
-# Create Application Load Balancer listener
+# Create Application Load Balancer listeners
 resource "aws_lb_listener" "alb-listener" {
+  for_each          = var.alb_listeners
   load_balancer_arn = aws_lb.alb.arn
-  port              = var.alb_listener_port
-  protocol          = var.alb_listener_protocol
+  port              = each.value.port
+  protocol          = each.value.protocol
   depends_on        = [aws_lb.alb]
   default_action {
     type             = "forward"
